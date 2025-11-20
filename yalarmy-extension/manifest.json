@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "description": "LearnUs 강의/과제 정보를 Yalarmy(Supabase)와 동기화하는 개인용 확장",
   "permissions": [
+    "storage",
     "scripting",
     "activeTab"
   ],
@@ -18,6 +19,7 @@
     }
   ],
   "action": {
-    "default_title": "Yalarmy Sync"
+    "default_title": "Yalarmy 설정",
+    "default_popup": "popup.html"
   }
 }
