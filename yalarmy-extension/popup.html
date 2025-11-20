@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Yalarmy 설정</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 12px;
+      width: 260px;
+    }
+    label {
+      font-size: 13px;
+      display: block;
+      margin-bottom: 4px;
+    }
+    input {
+      width: 100%;
+      padding: 6px 8px;
+      margin-bottom: 8px;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: none;
+      background: #4f46e5;
+      color: white;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .status {
+      font-size: 12px;
+      margin-top: 6px;
+      color: #4b5563;
+    }
+  </style>
+</head>
+<body>
+  <h3>Yalarmy 설정</h3>
+  <label for="userKey">메일 (user_key)</label>
+  <input id="userKey" type="email" placeholder="your_email@yonsei.ac.kr" />
+  <button id="saveBtn">저장</button>
+  <div class="status" id="status"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

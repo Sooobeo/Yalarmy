@@ -1,3 +1,16 @@
+function getUserKey() {
+  return new Promise((resolve) => {
+    // chrome.storage는 예외를 던지지 않음 → try/catch 불필요
+    chrome.storage.sync.get(['userKey'], (result) => {
+      const key = result && result.userKey ? result.userKey : null;
+
+      console.log('[Yalarmy] getUserKey() →', key);  // 디버깅용 로그
+
+      resolve(key);
+    });
+  });
+}
+
 // Yalarmy LearnUs Sync content script
 // ------------------------------------------------------
 // ✅ 로그인은 사용자가 직접 브라우저에서 한다.
@@ -231,6 +244,14 @@ function injectSyncButton() {
 
   btn.addEventListener('click', async () => {
   try {
+    const userKey = await getUserKey();
+      if (!userKey) {
+        alert('Yalarmy 아이콘을 눌러 메일(user_key)을 먼저 설정해 주세요.');
+        return;
+      }
+
+      console.log('[Yalarmy] Loaded userKey:', userKey);
+
     const courses = extractCourses();
     if (courses.length === 0) {
       alert('파싱된 과목이 없습니다.\n페이지 구조나 셀렉터를 다시 확인해 주세요.');
@@ -272,12 +293,13 @@ function injectSyncButton() {
 }
 
 // 3) Supabase REST API로 "과목"만 보내는 부분 (기존 기능 유지)
-async function syncToSupabaseCourses(courses) {
+async function syncToSupabaseCourses(courses, userKey) {
   const SUPABASE_URL = 'https://sguedpyifsjqzjhdaqzb.supabase.co';
   const SUPABASE_ANON_KEY =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNndWVkcHlpZnNqcXpqaGRhcXpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMzE1NDYsImV4cCI6MjA3NTYwNzU0Nn0.iggfDZwVS9E2MhTIl-9gRDVLZ4ermKCoW43mL-fAl7Q';
 
   const payload = courses.map((c) => ({
+    user_key: userKey,
     name: c.title,
     professor: c.professor,
     semester: c.semester
@@ -305,7 +327,7 @@ async function syncToSupabaseCourses(courses) {
 }
 
 // 3-2) Supabase로 "과목별 미완료 아이템" 보내는 부분
-async function syncCourseItemsToSupabase(coursesWithItems) {
+async function syncCourseItemsToSupabase(coursesWithItems, userKey) {
   const SUPABASE_URL = 'https://sguedpyifsjqzjhdaqzb.supabase.co';
   const SUPABASE_ANON_KEY =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNndWVkcHlpZnNqcXpqaGRhcXpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMzE1NDYsImV4cCI6MjA3NTYwNzU0Nn0.iggfDZwVS9E2MhTIl-9gRDVLZ4ermKCoW43mL-fAl7Q';
@@ -320,6 +342,7 @@ async function syncCourseItemsToSupabase(coursesWithItems) {
     items.forEach((item) => {
       // item.isIncomplete 는 이미 true인 것만 들어있다고 가정
       payload.push({
+        user_key: userKey, 
         course_title: courseTitle,
         course_semester: semester,
         course_professor: professor,
@@ -369,3 +392,4 @@ window.addEventListener('load', () => {
   injectSyncButton();
 });
 }
+
