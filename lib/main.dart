@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'pages/auth_page.dart';
 import 'pages/home_page.dart';
+import 'pages/calendar.dart';
 
 // ⚠️ 여기에 네 Supabase 프로젝트 URL / anon key 넣기
 const supabaseUrl = 'https://sguedpyifsjqzjhdaqzb.supabase.co';
@@ -43,6 +44,31 @@ class MyApp extends StatelessWidget {
             return const HomePage();
           }
         },
+      ),
+    );
+  }
+}
+
+
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home'),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CalendarPage()),
+            );
+          },
+          child: const Text('Go to Calendar'),
+        ),
       ),
     );
   }
