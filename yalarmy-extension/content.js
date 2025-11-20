@@ -230,38 +230,43 @@ function injectSyncButton() {
   btn.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
 
   btn.addEventListener('click', async () => {
-    try {
-      const courses = extractCourses();
-      if (courses.length === 0) {
-        alert('파싱된 과목이 없습니다.\n페이지 구조나 셀렉터를 다시 확인해 주세요.');
-        return;
-      }
-
-      btn.disabled = true;
-      btn.textContent = '동기화 + 파싱 중...';
-
-      // 1단계: 과목만 Supabase에 동기화 (기존 기능 유지)
-      await syncToSupabaseCourses(courses);
-
-      // 2단계: 각 과목 페이지로 들어가서 과제/동강 마감일 파싱 (콘솔에만 출력)
-      const coursesWithItems = await attachCourseItems(courses);
-      console.log(
-        '%c[Yalarmy] 최종 과목 + 과제/동강 마감일 구조:',
-        'color: #4f46e5; font-weight: bold;',
-        coursesWithItems
-      );
-
-      alert('Supabase로 과목 동기화 완료 + 콘솔에 과제/동강 마감일 파싱 결과 출력 완료!');
-
-      btn.textContent = 'Yalarmy로 동기화';
-      btn.disabled = false;
-    } catch (e) {
-      console.error('[Yalarmy] 동기화/파싱 에러:', e);
-      alert('동기화/파싱 중 에러가 발생했습니다. (콘솔 확인)');
-      btn.disabled = false;
-      btn.textContent = 'Yalarmy로 동기화';
+  try {
+    const courses = extractCourses();
+    if (courses.length === 0) {
+      alert('파싱된 과목이 없습니다.\n페이지 구조나 셀렉터를 다시 확인해 주세요.');
+      return;
     }
-  });
+
+    btn.disabled = true;
+    btn.textContent = '동기화 + 파싱 중...';
+
+    // 1단계: 과목만 Supabase에 동기화
+    await syncToSupabaseCourses(courses);
+
+    // 2단계: 각 과목 상세 페이지에서 미완료 아이템 파싱
+    const coursesWithItems = await attachCourseItems(courses);
+
+    // 3단계: 미완료 아이템을 Supabase course_items 테이블에 동기화
+    await syncCourseItemsToSupabase(coursesWithItems);
+
+    console.log(
+      '%c[Yalarmy] 최종 과목 + 과제/동강 마감일 구조:',
+      'color: #4f46e5; font-weight: bold;',
+      coursesWithItems
+    );
+
+    alert('Supabase로 과목 + 미완료 아이템 동기화 완료!');
+
+    btn.textContent = 'Yalarmy로 동기화';
+    btn.disabled = false;
+  } catch (e) {
+    console.error('[Yalarmy] 동기화/파싱 에러:', e);
+    alert('동기화/파싱 중 에러가 발생했습니다. (콘솔 확인)');
+    btn.disabled = false;
+    btn.textContent = 'Yalarmy로 동기화';
+  }
+});
+
 
   document.body.appendChild(btn);
 }
@@ -298,6 +303,61 @@ async function syncToSupabaseCourses(courses) {
 
   console.log('[Yalarmy] Supabase로 과목 동기화 성공');
 }
+
+// 3-2) Supabase로 "과목별 미완료 아이템" 보내는 부분
+async function syncCourseItemsToSupabase(coursesWithItems) {
+  const SUPABASE_URL = 'https://sguedpyifsjqzjhdaqzb.supabase.co';
+  const SUPABASE_ANON_KEY =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNndWVkcHlpZnNqcXpqaGRhcXpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMzE1NDYsImV4cCI6MjA3NTYwNzU0Nn0.iggfDZwVS9E2MhTIl-9gRDVLZ4ermKCoW43mL-fAl7Q';
+
+  // coursesWithItems = [{ title, semester, professor, items: [...] }, ...]
+  const payload = [];
+
+  coursesWithItems.forEach((course) => {
+    const { title: courseTitle, semester, professor, items } = course;
+    if (!items || !items.length) return;
+
+    items.forEach((item) => {
+      // item.isIncomplete 는 이미 true인 것만 들어있다고 가정
+      payload.push({
+        course_title: courseTitle,
+        course_semester: semester,
+        course_professor: professor,
+        item_title: item.title,
+        item_type: item.type,
+        raw_due_text: item.rawDueText,
+        has_due: item.hasDue,
+        is_incomplete: item.isIncomplete
+      });
+    });
+  });
+
+  if (!payload.length) {
+    console.log('[Yalarmy] Supabase로 보낼 미완료 아이템이 없습니다.');
+    return;
+  }
+
+  console.log('[Yalarmy] Supabase로 보낼 미완료 아이템 개수:', payload.length);
+
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/course_items`, {
+    method: 'POST',
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error('[Yalarmy] Supabase course_items 응답 에러:', res.status, text);
+    throw new Error(`Supabase course_items Error ${res.status}`);
+  }
+
+  console.log('[Yalarmy] Supabase로 미완료 아이템 동기화 성공');
+}
+
 
 // 4) 실제 실행: 과목 리스트 페이지에서만 버튼 주입
 window.addEventListener('load', () => {
