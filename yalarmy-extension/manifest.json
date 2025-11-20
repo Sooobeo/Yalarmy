@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Yalarmy LearnUs Sync",
+  "version": "0.1.0",
+  "description": "LearnUs 강의/과제 정보를 Yalarmy(Supabase)와 동기화하는 개인용 확장",
+  "permissions": [
+    "scripting",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://ys.learnus.org/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://ys.learnus.org/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "Yalarmy Sync"
+  }
+}
