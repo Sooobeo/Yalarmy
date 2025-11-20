@@ -62,18 +62,159 @@ function extractCourses() {
   return courses;
 }
 
+// 1-2) 과목 상세 페이지에서 과제/동강/퀴즈 등 아이템 + 마감일 파싱
+function extractItemsFromCourseDoc(doc) {
+  // TODO: LearnUs 실제 구조에 맞게 필요하면 셀렉터 한 번 더 튜닝
+  // Moodle/런어스 계열에서 활동 하나는 보통 li.activity 같은 구조
+  const itemNodes =
+    doc.querySelectorAll('li.activity') ||
+    doc.querySelectorAll('.activityinstance');
 
-  // 2) 화면에 "Yalarmy로 동기화" 버튼 주입
-  function injectSyncButton() {
+  console.log('[Yalarmy]  이 과목에서 감지된 활동 개수:', itemNodes.length);
+
+  const items = [];
+
+  itemNodes.forEach((node, idx) => {
+
+const completionImg = node.querySelector('img.icon');
+
+let isIncomplete = false;  // 기본값 = 완료로 처리
+
+if (completionImg) {
+  const src = completionImg.getAttribute('src') || '';
+
+  if (src.includes('completion-auto-n')) {
+    isIncomplete = true;   // 미완료
+  } else if (src.includes('completion-auto-y')) {
+    isIncomplete = false;  // 완료 (기본값과 동일)
+  }
+}
+
+// 완료된 활동은 스킵
+if (!isIncomplete) return;
+
+    // 타입: 클래스 이름 안에 assignment / quiz / forum / url / resource 등 들어 있는 경우가 많음
+    const classList = Array.from(node.classList);
+    const typeClass = classList.find((cls) =>
+      ['assign', 'quiz', 'forum', 'url', 'resource', 'vod', 'video', 'lecture'].some((key) =>
+        cls.toLowerCase().includes(key)
+      )
+    );
+    let itemType = 'unknown';
+    if (typeClass) {
+      if (typeClass.includes('assign')) itemType = 'assignment';
+      else if (typeClass.includes('quiz')) itemType = 'quiz';
+      else if (typeClass.includes('forum')) itemType = 'forum';
+      else if (typeClass.toLowerCase().includes('vod') || typeClass.toLowerCase().includes('video') || typeClass.toLowerCase().includes('lecture')) {
+        itemType = 'video';
+      } else {
+        itemType = typeClass;
+      }
+    }
+
+    // 제목: instancename / activityname / a 태그 등에서 추출
+    let title = '제목없음';
+    let titleEl =
+      node.querySelector('.instancename') ||
+      node.querySelector('.activityname') ||
+      node.querySelector('.activityinstance a') ||
+      node.querySelector('a');
+
+    if (titleEl) {
+      // instancename 안에 span.accesshide 같은 거 들어 있는 경우 첫 텍스트만 사용
+      const firstTextNode = Array.from(titleEl.childNodes).find(
+        (n) => n.nodeType === Node.TEXT_NODE
+      );
+      if (firstTextNode) {
+        title = firstTextNode.textContent.trim();
+      } else {
+        title = titleEl.textContent.trim();
+      }
+    }
+
+    // 마감일: duedate, submissiondate, 날짜 텍스트 등 추정
+    let dueText = null;
+
+    const dueEl =
+      node.querySelector('.text-upstrap') ||
+      node.querySelector('.submissiondate') ||
+      node.querySelector('.submissionsummary') ||
+      node.querySelector('.activity-due') ||
+      node.querySelector(".text-warning"); // 종종 마감일에 강조 색이 들어감
+
+    if (dueEl) {
+      dueText = dueEl.textContent.trim();
+    } else {
+      // fallback: 노드 전체 텍스트에서 "~"이라는 단어 포함된 줄 찾기
+      const lines = node.innerText.split('\n').map((l) => l.trim());
+      const maybeDue = lines.find((l) => l.includes('~') || l.toLowerCase().includes('due'));
+      if (maybeDue) {
+        dueText = maybeDue;
+      }
+    }
+
+    const item = {
+      idx,
+      type: itemType,
+      title,
+      rawDueText: dueText,
+      hasDue: !!dueText,   // ✅ 마감이 있으면 true, 없으면 false
+      isIncomplete 
+    };
+
+    console.log('[Yalarmy]   활동(미완료)', idx + 1, item);
+    items.push(item);
+  });
+
+  console.log('[Yalarmy]  이 과목에서 "미완료"로 판별된 활동 개수:', items.length);
+  return items;
+}
+// 1-3) 모든 과목에 대해 상세 페이지 fetch + 아이템 붙이기
+async function attachCourseItems(courses) {
+  const result = [];
+
+  for (const course of courses) {
+    if (!course.link) {
+      result.push({ ...course, items: [] });
+      continue;
+    }
+
+    try {
+      console.log('[Yalarmy] 과목 상세 페이지 요청:', course.title, course.link);
+      const res = await fetch(course.link, { credentials: 'include' });
+      const html = await res.text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+
+      const items = extractItemsFromCourseDoc(doc);
+
+      result.push({
+        ...course,
+        items
+      });
+    } catch (e) {
+      console.error('[Yalarmy] 과목 상세 페이지 파싱 에러:', course.title, e);
+      result.push({
+        ...course,
+        items: []
+      });
+    }
+  }
+
+  console.log('[Yalarmy] 과목 + 아이템 전체 구조:', result);
+  return result;
+}
+
+// 2) 화면에 "Yalarmy로 동기화" 버튼 주입
+function injectSyncButton() {
   const existing = document.getElementById('yalarmy-sync-btn');
-  if (existing) return;
+  if (existing) return; // 중복 방지
 
   const btn = document.createElement('button');
   btn.id = 'yalarmy-sync-btn';
   btn.textContent = 'Yalarmy로 동기화';
 
   btn.style.position = 'fixed';
-  // 🔁 오른쪽 아래 → 왼쪽 아래로 변경
+  // 오른쪽 아래에 LearnUs 버튼이 있으니까, 우리는 왼쪽 아래로 피신
   btn.style.left = '20px';
   btn.style.bottom = '20px';
   btn.style.right = 'auto';
@@ -88,69 +229,78 @@ function extractCourses() {
   btn.style.cursor = 'pointer';
   btn.style.boxShadow = '0 4px 10px rgba(0,0,0,0.2)';
 
-    btn.addEventListener('click', async () => {
-      try {
-        const courses = extractCourses();
-        if (courses.length === 0) {
-          alert('파싱된 과목이 없습니다.\n페이지 구조나 셀렉터를 다시 확인해 주세요.');
-          return;
-        }
-
-        btn.disabled = true;
-        btn.textContent = '동기화 중...';
-
-        await syncToSupabase(courses);
-
-        btn.textContent = '동기화 완료!';
-        setTimeout(() => {
-          btn.textContent = 'Yalarmy로 동기화';
-          btn.disabled = false;
-        }, 1500);
-      } catch (e) {
-        console.error('[Yalarmy] 동기화 에러:', e);
-        alert('동기화 중 에러가 발생했습니다. (콘솔 확인)');
-        btn.disabled = false;
-        btn.textContent = 'Yalarmy로 동기화';
+  btn.addEventListener('click', async () => {
+    try {
+      const courses = extractCourses();
+      if (courses.length === 0) {
+        alert('파싱된 과목이 없습니다.\n페이지 구조나 셀렉터를 다시 확인해 주세요.');
+        return;
       }
-    });
 
-    document.body.appendChild(btn);
-  }
+      btn.disabled = true;
+      btn.textContent = '동기화 + 파싱 중...';
 
-  // 3) Supabase REST API로 보내는 부분 (개인용 버전)
-  async function syncToSupabase(courses) {
-    const SUPABASE_URL = 'https://sguedpyifsjqzjhdaqzb.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNndWVkcHlpZnNqcXpqaGRhcXpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMzE1NDYsImV4cCI6MjA3NTYwNzU0Nn0.iggfDZwVS9E2MhTIl-9gRDVLZ4ermKCoW43mL-fAl7Q';
+      // 1단계: 과목만 Supabase에 동기화 (기존 기능 유지)
+      await syncToSupabaseCourses(courses);
 
-    const payload = courses.map((c) => ({
-      name: c.title,
-      professor: c.professor,
-      semester: c.semester,
-      // source_link: c.link,
-      // user_id: '나의 유저 ID',
-    }));
+      // 2단계: 각 과목 페이지로 들어가서 과제/동강 마감일 파싱 (콘솔에만 출력)
+      const coursesWithItems = await attachCourseItems(courses);
+      console.log(
+        '%c[Yalarmy] 최종 과목 + 과제/동강 마감일 구조:',
+        'color: #4f46e5; font-weight: bold;',
+        coursesWithItems
+      );
 
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/courses`, {
-      method: 'POST',
-      headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload)
-    });
+      alert('Supabase로 과목 동기화 완료 + 콘솔에 과제/동강 마감일 파싱 결과 출력 완료!');
 
-    if (!res.ok) {
-      const text = await res.text();
-      console.error('[Yalarmy] Supabase 응답 에러:', res.status, text);
-      throw new Error(`Supabase Error ${res.status}`);
+      btn.textContent = 'Yalarmy로 동기화';
+      btn.disabled = false;
+    } catch (e) {
+      console.error('[Yalarmy] 동기화/파싱 에러:', e);
+      alert('동기화/파싱 중 에러가 발생했습니다. (콘솔 확인)');
+      btn.disabled = false;
+      btn.textContent = 'Yalarmy로 동기화';
     }
+  });
 
-    console.log('[Yalarmy] Supabase 동기화 성공');
+  document.body.appendChild(btn);
+}
+
+// 3) Supabase REST API로 "과목"만 보내는 부분 (기존 기능 유지)
+async function syncToSupabaseCourses(courses) {
+  const SUPABASE_URL = 'https://sguedpyifsjqzjhdaqzb.supabase.co';
+  const SUPABASE_ANON_KEY =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNndWVkcHlpZnNqcXpqaGRhcXpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMzE1NDYsImV4cCI6MjA3NTYwNzU0Nn0.iggfDZwVS9E2MhTIl-9gRDVLZ4ermKCoW43mL-fAl7Q';
+
+  const payload = courses.map((c) => ({
+    name: c.title,
+    professor: c.professor,
+    semester: c.semester
+    // source_link: c.link,
+    // user_id: '나의 유저 ID',
+  }));
+
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/courses`, {
+    method: 'POST',
+    headers: {
+      apikey: SUPABASE_ANON_KEY,
+      Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error('[Yalarmy] Supabase 응답 에러:', res.status, text);
+    throw new Error(`Supabase Error ${res.status}`);
   }
 
-  // 4) 실제 실행
-  window.addEventListener('load', () => {
+  console.log('[Yalarmy] Supabase로 과목 동기화 성공');
+}
+
+// 4) 실제 실행: 과목 리스트 페이지에서만 버튼 주입
+window.addEventListener('load', () => {
   if (!isCourseListPage()) {
     console.log('[Yalarmy] 과목 리스트 페이지가 아니라고 판단, 버튼 주입 안 함:', location.href);
     return;
