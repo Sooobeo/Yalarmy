@@ -56,10 +56,33 @@ class _IncompleteItemsPageState extends State<IncompleteItemsPage> {
         .toList();
   }
 
+  // ==========================
+  //  타입별 색/라벨 매핑
+  // ==========================
+  Color colorForType(String type) {
+    final t = type.toLowerCase();
+    if (t.contains("assign")) return Colors.red.shade400; // 과제
+    if (t.contains("video") || t.contains("lecture")) {
+      return Colors.blue.shade400; // 강의/영상
+    }
+    if (t.contains("quiz") || t.contains("test")) {
+      return Colors.green.shade400; // 퀴즈/시험
+    }
+    return Colors.grey.shade400;
+  }
+
+  String labelForType(String type) {
+    final t = type.toLowerCase();
+    if (t.contains("assign")) return "과제";
+    if (t.contains("video") || t.contains("lecture")) return "강의";
+    if (t.contains("quiz") || t.contains("test")) return "퀴즈";
+    return type;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("미완료 항목 (테스트 화면)")),
+      appBar: AppBar(title: const Text("미완료 항목")),
       body: FutureBuilder<List<CourseItem>>(
         future: fetchIncompleteItems(),
         builder: (context, snapshot) {
@@ -77,7 +100,8 @@ class _IncompleteItemsPageState extends State<IncompleteItemsPage> {
           }
 
           // 1) 과목 목록 뽑기(중복 제거)
-          final courses = items.map((e) => e.courseTitle).toSet().toList()..sort();
+          final courses =
+              items.map((e) => e.courseTitle).toSet().toList()..sort();
 
           // 2) 선택 과목 기준 필터링
           final filteredItems = (selectedCourse == null)
@@ -93,7 +117,8 @@ class _IncompleteItemsPageState extends State<IncompleteItemsPage> {
                 height: 64,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   children: [
                     _CourseButton(
                       label: "전체",
@@ -123,24 +148,105 @@ class _IncompleteItemsPageState extends State<IncompleteItemsPage> {
               const Divider(height: 1),
 
               // ======================
-              //  하단: 필터된 미완료 리스트
+              //  하단: 필터된 미완료 리스트 (색 구분 카드)
               // ======================
               Expanded(
                 child: ListView.separated(
                   padding: const EdgeInsets.all(16),
                   itemCount: filteredItems.length,
-                  separatorBuilder: (_, __) => const Divider(),
+                  separatorBuilder: (_, __) => const SizedBox(height: 8),
                   itemBuilder: (context, i) {
                     final it = filteredItems[i];
-                    return ListTile(
-                      leading: const Icon(Icons.pending_actions),
-                      title: Text(it.itemTitle),
-                      subtitle: Text(
-                        "${it.courseTitle}\n"
-                        "종류: ${it.itemType}\n"
-                        "${it.rawDueText != null ? "마감: ${it.rawDueText}" : ""}",
+                    final typeColor = colorForType(it.itemType);
+                    final typeLabel = labelForType(it.itemType);
+
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.06),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
-                      isThreeLine: true,
+                      child: Row(
+                        children: [
+                          // 좌측 타입 컬러 바
+                          Container(
+                            width: 6,
+                            height: 78,
+                            decoration: BoxDecoration(
+                              color: typeColor,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(12),
+                                bottomLeft: Radius.circular(12),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: typeColor.withOpacity(0.15),
+                                child: Icon(
+                                  Icons.pending_actions,
+                                  color: typeColor,
+                                ),
+                              ),
+                              title: Text(
+                                it.itemTitle,
+                                style:
+                                    const TextStyle(fontWeight: FontWeight.w700),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 4),
+                                  Text(it.courseTitle),
+                                  const SizedBox(height: 6),
+                                  Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 3),
+                                        decoration: BoxDecoration(
+                                          color: typeColor.withOpacity(0.12),
+                                          borderRadius:
+                                              BorderRadius.circular(999),
+                                        ),
+                                        child: Text(
+                                          typeLabel,
+                                          style: TextStyle(
+                                            color: typeColor,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                      if (it.rawDueText != null) ...[
+                                        const SizedBox(width: 8),
+                                        Flexible(
+                                          child: Text(
+                                            "마감: ${it.rawDueText}",
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.black54,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              isThreeLine: true,
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   },
                 ),
@@ -172,7 +278,7 @@ class _CourseButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 92, // ★ 고정폭
+        width: 92,
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         decoration: BoxDecoration(
           color: selected ? Colors.indigo.shade500 : Colors.grey.shade300,
@@ -191,7 +297,7 @@ class _CourseButton extends StatelessWidget {
           child: Text(
             label,
             maxLines: 1,
-            overflow: TextOverflow.ellipsis, // ★ 길면 ...
+            overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: TextStyle(
               color: selected ? Colors.white : Colors.black87,
