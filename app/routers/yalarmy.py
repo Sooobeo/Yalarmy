@@ -1,23 +1,14 @@
+# yalarmy.py
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from app.db import supabase               # supabase client 로드
-import json
+from app.db import supabase
 
 router = APIRouter(prefix="/yalarmy", tags=["yalarmy"])
 
-
-# ============================
-# 요청 바디 정의
-# ============================
 class EnsureUserRequest(BaseModel):
     email: str
     password: str
 
-
-# ============================
-#  POST /yalarmy/ensure-user
-#  Supabase 로그인 또는 회원가입
-# ============================
 @router.post("/ensure-user")
 async def ensure_user(body: EnsureUserRequest):
     email = body.email
@@ -32,12 +23,19 @@ async def ensure_user(body: EnsureUserRequest):
         print("[ensure-user] 로그인 요청 중 오류:", e)
         raise HTTPException(status_code=500, detail=f"로그인 오류: {str(e)}")
 
-    # sign_in_with_password 결과(res)는 dict 형태. data가 리스트로 올 때가 있음.
-    if hasattr(res, "user") and res.user is not None:
-        # 로그인 성공
-        return {"userKey": res.user.id}
+    # ✅ supabase v2 호환: res.data.user 우선 확인
+    user = None
+    if getattr(res, "user", None):
+        user = res.user
+    elif getattr(res, "data", None) and getattr(res.data, "user", None):
+        user = res.data.user
+    elif getattr(res, "data", None) and getattr(res.data, "session", None):
+        user = res.data.session.user
 
-    # 2) 로그인 실패 → 회원가입 시도
+    if user is not None:
+        return {"userKey": user.id}
+
+    # 2) 로그인 실패 → 회원가입
     try:
         signup_res = supabase.auth.sign_up(
             {"email": email, "password": password}
@@ -46,15 +44,16 @@ async def ensure_user(body: EnsureUserRequest):
         print("[ensure-user] 회원가입 중 오류:", e)
         raise HTTPException(status_code=500, detail=f"회원가입 오류: {str(e)}")
 
-    # supabase-python SDK는 signup 직후 signup_res.user 또는 signup_res.session.user 형태로 반환할 수 있음
-    user = None
-    if hasattr(signup_res, "user") and signup_res.user:
-        user = signup_res.user
-    elif hasattr(signup_res, "session") and signup_res.session:
-        user = signup_res.session.user
+    signup_user = None
+    if getattr(signup_res, "user", None):
+        signup_user = signup_res.user
+    elif getattr(signup_res, "data", None) and getattr(signup_res.data, "user", None):
+        signup_user = signup_res.data.user
+    elif getattr(signup_res, "data", None) and getattr(signup_res.data, "session", None):
+        signup_user = signup_res.data.session.user
 
-    if user is None:
+    if signup_user is None:
         print("[ensure-user] signup_res =", signup_res)
-        raise HTTPException(status_code=500, detail="'list' object has no attribute 'data' 또는 유저 생성 실패")
+        raise HTTPException(status_code=500, detail="유저 생성 실패")
 
-    return {"userKey": user.id}
+    return {"userKey": signup_user.id}
