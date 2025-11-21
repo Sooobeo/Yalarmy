@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
-
+import Topbar from "../components/Topbar.js";
+import "./ChoosePage.css";
 
 
 function ChoosePage()
@@ -18,11 +19,9 @@ function ChoosePage()
 
     return (
         <div>
-            <div className = "w-[100%] h-[5em] py-[1em] px-[3em] bg-[#fcf7fe] flex flex-col gap-5 border-b-2 border-b-gray justify-center">
-                <img src="/Logo.png" alt="" className = "w-[7rem]" />
-            </div>
+            <Topbar />
 
-            <div className = "flex flex-col pt-[20em] pb-[9em] px-[3em] gap-[20rem] bg-[#fcf7fe] items-center">
+            <div className="flex flex-col pt-[20em] pb-[9em] px-[3em] gap-[20rem] bg-white items-center">
                 <div className = "flex flex-col gap-6">
                     <div data-aos="fade-up" className = "opacity-0 text-2xl font-semibold">
                         👋 안녕하세요, 오늘도 학업 일정 시작해볼까요?
