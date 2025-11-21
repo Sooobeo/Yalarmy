@@ -12,10 +12,12 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
+          {/*
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path = "/choose" element = {<ChoosePage/>}></Route>
+          */}
+          <Route path = "/" element = {<ChoosePage/>}></Route>
           <Route path = "/calendar" element = {<Calendar/>}></Route>
           <Route path = "/tasks" element = {<Unfinished/>}></Route>
         </Routes>
