@@ -1,11 +1,10 @@
-import Calendar from './components/Calendar.js';
+import Unfinished from './pages/Unfinished.js';
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <Calendar></Calendar>
-      <Calendar></Calendar>
+      <Unfinished></Unfinished>
     </div>
   );
 }
