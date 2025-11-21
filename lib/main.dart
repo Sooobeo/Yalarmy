@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'pages/auth_page.dart';
 import 'pages/home_page.dart';
 import 'pages/calendar.dart';
+import 'pages/incomplete_items_page.dart';
 
 // ⚠️ 여기에 네 Supabase 프로젝트 URL / anon key 넣기
 const supabaseUrl = 'https://sguedpyifsjqzjhdaqzb.supabase.co';
@@ -60,14 +61,29 @@ class HomePage extends StatelessWidget {
         title: const Text('Home'),
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CalendarPage()),
-            );
-          },
-          child: const Text('Go to Calendar'),
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // 버튼을 가운데에 정렬
+          children: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CalendarPage()),
+                );
+              },
+              child: const Text('Go to Calendar'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const IncompleteItemsPage()),
+                );
+              },
+              child: const Text('미완료 항목 보기 (테스트)'),
+            ),
+          ],
         ),
       ),
     );
