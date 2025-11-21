@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from typing import List
 from app.schemas.notifications import SyncRequest, NotificationOut
 from app.utils.notify_rules import compute_notify_times
-from app.utils.due_parser import parse_due_text
+from app.routers.due_parser import parse_due_text
 from app.db import supabase
 from datetime import datetime, timedelta, timezone
 

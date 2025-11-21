@@ -2,7 +2,7 @@
 from pydantic import BaseModel, HttpUrl
 from datetime import datetime
 from typing import Optional, List
-from app.utils.due_parser import parse_due_text
+from app.routers.due_parser import parse_due_text
 
 
 # 1) 확장에서 오는 하나의 포털 아이템
