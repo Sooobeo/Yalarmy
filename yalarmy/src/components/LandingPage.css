@@ -358,6 +358,19 @@ html {
   }
 }
 
+.yl-team-card h3 {
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  white-space: normal;
+  /* 줄바꿈 허용 */
+  word-break: keep-all;
+  /* 단어(이름) 중간에서 안 끊김 */
+  line-height: 1.35;
+  /* 줄 간격 조정 */
+}
+
+
 /* =============== FOOTER =============== */
 .yl-footer {
   text-align: center;

@@ -230,22 +230,22 @@ function LandingPage() {
 
                 <div className="yl-team-grid">
                     <div className="yl-team-card">
-                        <h3>PM / Backend — 문규리</h3>
+                        <h3>PM / Backend 문규리</h3>
                         <p>Supabase · Data Model · Chrome Extension</p>
                     </div>
 
                     <div className="yl-team-card">
-                        <h3>Design / Frontend — 김나현</h3>
+                        <h3>Design / Frontend 김나현</h3>
                         <p>React Web · UI 구현</p>
                     </div>
 
                     <div className="yl-team-card">
-                        <h3>Frontend — 김예원</h3>
+                        <h3>Frontend 김예원</h3>
                         <p>React Web · 기능 구현</p>
                     </div>
 
                     <div className="yl-team-card">
-                        <h3>Frontend Lead — 박진우</h3>
+                        <h3>Frontend Lead 박진우</h3>
                         <p>프론트엔드 총괄 · 코드 구조 설계</p>
                     </div>
                 </div>
