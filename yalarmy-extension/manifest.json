@@ -9,7 +9,8 @@
     "activeTab"
   ],
   "host_permissions": [
-    "https://ys.learnus.org/*"
+    "https://ys.learnus.org/*",
+    "http://127.0.0.1:8000/*"
   ],
   "content_scripts": [
     {
@@ -22,4 +23,5 @@
     "default_title": "Yalarmy 설정",
     "default_popup": "popup.html"
   }
+  
 }
