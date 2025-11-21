@@ -391,3 +391,31 @@ window.addEventListener('load', () => {
 });
 }
 
+const userKey = await getUserKey(); // supabase user.id
+
+await fetch(`${BACKEND_URL}/course_items`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    user_id: userKey,      // ★ 중요 ★
+    course_title,
+    course_semester,
+    course_professor,
+    item_title,
+    item_type,
+    raw_due_text,
+    has_due,
+    is_incomplete,
+  }),
+});
+
+await fetch(`${BACKEND_URL}/courses`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    user_id: userKey,
+    name: lectureName,
+    professor: professorName,
+    semester: "2025-1",
+  }),
+});
