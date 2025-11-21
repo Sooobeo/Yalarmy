@@ -223,36 +223,35 @@ function LandingPage() {
 
                 </div>
             </section>
-
             {/* TEAM */}
-            <section id="team" className="yl-section yl-team" data-aos="fade-up">
+            <section id="team" className="yl-section yl-team">
                 <h2 className="yl-section-title">팀 소개</h2>
                 <p className="yl-section-desc">Yalarmy를 만드는 사람들입니다.</p>
 
                 <div className="yl-team-grid">
-
-                    <div className="yl-team-card" data-aos="fade-up" data-aos-delay="0">
-                        <h3>PM / Backend</h3>
+                    <div className="yl-team-card">
+                        <h3>PM / Backend — 문규리</h3>
                         <p>Supabase · Data Model · Chrome Extension</p>
                     </div>
 
-                    <div className="yl-team-card" data-aos="fade-up" data-aos-delay="100">
-                        <h3>Frontend</h3>
+                    <div className="yl-team-card">
+                        <h3>Design / Frontend — 김나현</h3>
                         <p>React Web · UI 구현</p>
                     </div>
 
-                    <div className="yl-team-card" data-aos="fade-up" data-aos-delay="200">
-                        <h3>Flutter</h3>
-                        <p>모바일 앱 · Supabase 연동</p>
+                    <div className="yl-team-card">
+                        <h3>Frontend — 김예원</h3>
+                        <p>React Web · 기능 구현</p>
                     </div>
 
-                    <div className="yl-team-card" data-aos="fade-up" data-aos-delay="300">
-                        <h3>Design</h3>
-                        <p>UI 디자인 · 서비스 브랜딩</p>
+                    <div className="yl-team-card">
+                        <h3>Frontend Lead — 박진우</h3>
+                        <p>프론트엔드 총괄 · 코드 구조 설계</p>
                     </div>
-
                 </div>
             </section>
+
+
 
             {/* FOOTER */}
             <footer className="yl-footer" data-aos="fade-up">
