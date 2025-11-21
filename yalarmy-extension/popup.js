@@ -44,3 +44,22 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
     console.error(e);
   }
 });
+
+document.getElementById("syncBtn").addEventListener("click", async () => {
+  const status = document.getElementById("status");
+  status.textContent = "동기화 중...";
+
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id) {
+    status.textContent = "활성 탭 없음";
+    return;
+  }
+
+  chrome.tabs.sendMessage(tab.id, { type: "YALARMY_SYNC" }, (res) => {
+    if (chrome.runtime.lastError) {
+      status.textContent = "이 페이지는 동기화 불가";
+      return;
+    }
+    status.textContent = res?.ok ? "동기화 완료!" : "동기화 실패";
+  });
+});

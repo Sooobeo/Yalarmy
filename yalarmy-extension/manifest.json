@@ -7,7 +7,10 @@
     "storage",
     "scripting",
     "activeTab",
-    "identity"
+    "identity",
+    "alarms",
+    "notifications",
+    "tabs"
   ],
   "host_permissions": [
     "https://ys.learnus.org/*",
@@ -24,11 +27,6 @@
     "default_title": "Yalarmy 설정",
     "default_popup": "popup.html"
   },
-  "permissions": [
-    "alarms",
-    "notifications",
-    "tabs"
-  ],
   "background": {
     "service_worker": "background.js",
     "type": "module"
