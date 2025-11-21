@@ -1,68 +1,115 @@
 // popup.js
 
-const BACKEND_URL = "http://127.0.0.1:8000"; 
-// 배포 시 백엔드 도메인으로 바꿔
-
-// ✅ 실제 존재하는 엔드포인트로 바꿔야 함!
-// 지금 에러난 경로가 /yalarmy/ensure-user 였으니까
-// 네 백엔드에 맞게 여기만 정확히 수정하면 됨.
+const BACKEND_URL = "http://127.0.0.1:8000";
 const ENSURE_USER_ENDPOINT = "/yalarmy/ensure-user"; 
-// 예: "/api/users/ensure" 같은 걸로 바뀌었으면 그걸로
+// ⚠️ 실제 백엔드 경로가 다르면 여기만 바꿔
 
+function setStatus(msg) {
+  const el = document.getElementById("status");
+  if (el) el.textContent = msg;
+}
+
+// (A) server에 userKey 생성/확인 요청 (필요 없으면 아래 함수 통째로 안 써도 됨)
 async function getOrCreateUserKey(loginId, password) {
   const res = await fetch(`${BACKEND_URL}${ENSURE_USER_ENDPOINT}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ loginId, password })
+    body: JSON.stringify({ loginId, password }),
   });
-
   if (!res.ok) {
     const text = await res.text();
     throw new Error(text || `HTTP ${res.status}`);
   }
+  return res.json(); // { userKey: "..."} 또는 { user_id: "..."} 기대
+}
 
-  return res.json(); // { userKey: "..."} 같은 응답이라고 가정
+// storage에서 userKey/user_id 둘 다 읽기
+function getStoredUserKey() {
+  return new Promise((resolve) => {
+    chrome.storage.sync.get(["userKey", "user_id"], (r) => {
+      resolve(r.userKey || r.user_id || null);
+    });
+  });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const userIdInput = document.getElementById("userIdInput");
-  const passwordInput = document.getElementById("passwordInput");
+  const userKeyInput = document.getElementById("userKey");   // ✅ popup.html id
+  const passwordInput = document.getElementById("password"); // ✅ popup.html id
   const saveBtn = document.getElementById("saveBtn");
-  const status = document.getElementById("status");
+  const syncBtn = document.getElementById("syncBtn");
 
-  if (!saveBtn) {
-    console.error("[Yalarmy] saveBtn 없음. popup.html id 확인!");
+  if (!userKeyInput || !passwordInput || !saveBtn || !syncBtn) {
+    console.error("[Yalarmy] popup 요소 못 찾음. popup.html id 확인!");
     return;
   }
 
+  // ----------------------------
+  // 1) 저장 버튼
+  // ----------------------------
   saveBtn.addEventListener("click", async () => {
     try {
-      status.textContent = "저장 중...";
-      const loginId = userIdInput.value.trim();
+      setStatus("저장 중...");
+
+      const loginId = userKeyInput.value.trim();
       const password = passwordInput.value.trim();
 
-      if (!loginId || !password) {
-        status.textContent = "아이디/비번을 입력해줘.";
+      if (!loginId) {
+        setStatus("메일/학번(userKey)을 입력해줘.");
         return;
       }
 
-      // 서버에서 userKey 생성/확인
-      const data = await getOrCreateUserKey(loginId, password);
-      const userKey = data.userKey || data.user_id;
-
-      if (!userKey) {
-        status.textContent = "서버 응답에 userKey가 없어.";
-        return;
+      let userKey = loginId; 
+      // ✅ 만약 서버에서 userKey 발급/확인 로직을 쓰고 싶으면 아래 블록 ON
+      if (password) {
+        try {
+          const data = await getOrCreateUserKey(loginId, password);
+          userKey = data.userKey || data.user_id || userKey;
+        } catch (e) {
+          // 서버 안 쓰는 상태면 그냥 loginId 저장하도록 fallback
+          console.warn("[Yalarmy] ensure-user 실패, loginId를 userKey로 저장:", e.message);
+        }
       }
 
-      // ✅ storage에 저장 (userKey + user_id 둘 다 넣어두면 완전 안전)
       chrome.storage.sync.set({ userKey, user_id: userKey }, () => {
-        status.textContent = "저장 완료! 이제 동기화 누르면 돼.";
+        setStatus("저장 완료!");
+      });
+    } catch (e) {
+      console.error(e);
+      setStatus(`저장 실패: ${e.message}`);
+    }
+  });
+
+  // ----------------------------
+  // 2) 동기화 버튼
+  // ----------------------------
+  syncBtn.addEventListener("click", async () => {
+    try {
+      setStatus("동기화 요청 중...");
+
+      const userKey = await getStoredUserKey();
+      if (!userKey) {
+        setStatus("먼저 userKey를 저장해줘.");
+        return;
+      }
+
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!tab?.id) {
+        setStatus("활성 탭이 없어.");
+        return;
+      }
+
+      // content.js에 파싱/동기화 트리거 메시지 전송
+      chrome.tabs.sendMessage(tab.id, { type: "YALARMY_SYNC" }, (res) => {
+        if (chrome.runtime.lastError) {
+          setStatus("이 페이지에선 동기화 불가(런어스에서 실행해줘).");
+          return;
+        }
+        setStatus(res?.ok ? "동기화 완료!" : "동기화 실패(콘솔 확인)");
       });
 
     } catch (e) {
       console.error(e);
-      status.textContent = `저장 실패: ${e.message}`;
+      setStatus(`동기화 실패: ${e.message}`);
     }
   });
 });
