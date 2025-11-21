@@ -1,15 +1,13 @@
-function getUserKey() {
+async function getUserKey() {
   return new Promise((resolve) => {
-    // chrome.storage는 예외를 던지지 않음 → try/catch 불필요
     chrome.storage.sync.get(['userKey'], (result) => {
-      const key = result && result.userKey ? result.userKey : null;
-
-      console.log('[Yalarmy] getUserKey() →', key);  // 디버깅용 로그
-
+      const key = result?.userKey ?? null;
+      console.log('[Yalarmy] getUserKey() →', key);
       resolve(key);
     });
   });
 }
+
 
 // Yalarmy LearnUs Sync content script
 // ------------------------------------------------------
