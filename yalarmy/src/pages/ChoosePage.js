@@ -18,9 +18,38 @@ function ChoosePage()
 
     return (
         <div>
-            <div className = "w-[100%] h-[5em] py-[1em] px-[3em] bg-[#fcf7fe] flex flex-col gap-5 border-b-2 border-b-gray justify-center">
-                <img src="/Logo.png" alt="" className = "w-[7rem]" />
-            </div>
+            <div className="w-[100%] h-[5em] py-[1em] px-[3em] bg-[#fcf7fe] flex items-center justify-between border-b-2 border-b-gray">
+      <img src="/Logo.png" alt="" className="w-[7rem]" />
+
+      {/* 로그아웃 버튼 */}
+      <button
+        style={{
+          color: "#003672",
+          fontWeight: 600,
+          backgroundColor: "white",
+          padding: "0.5rem 1rem",
+          borderRadius: "0.5rem",
+          border: "1px solid #003672",
+          cursor: "pointer",
+          transition: "background-color 0.3s ease, color 0.3s ease",
+        }}
+        onClick={() => {
+          // 로그아웃 로직
+          localStorage.clear();
+          window.location.href = "/";
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.backgroundColor = "#003672";
+          e.target.style.color = "white";
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.backgroundColor = "white";
+          e.target.style.color = "#003672";
+        }}
+      >
+        로그아웃
+      </button>
+    </div>
 
             <div className = "flex flex-col pt-[20em] pb-[9em] px-[3em] gap-[20rem] bg-[#fcf7fe] items-center">
                 <div className = "flex flex-col gap-6">
