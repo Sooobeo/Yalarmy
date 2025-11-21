@@ -5,6 +5,7 @@ function App() {
   return (
     <div className="App">
       <Unfinished></Unfinished>
+      <Calendar></Calendar>
     </div>
   );
 }
