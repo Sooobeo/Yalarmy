@@ -1,8 +1,9 @@
 :root {
   --round: 10px;
-  --lightgray: #ccc;
+  --lightgray: rgba(80, 80, 140, 0.1);
+;
   --gray: #888;
-  --block-color1: #ffcc00;
+  --block-color1: #50508C;
   --block-color2: #66ccff;
 }
 
@@ -15,10 +16,11 @@
   border-radius: var(--round);
 }
 
+
 .calendar-header {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  background-color: #f0f0f0;
+  background-color: var(--lightgray);
   text-align: center;
   font-weight: 540;
   border-top-left-radius: var(--round);
@@ -28,8 +30,8 @@
 }
 
 .calendar-day-header {
-  padding: 10px 0;
-  border-bottom: 1px solid #ccc;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--lightgray);
 }
 
 .calendar-grid {
@@ -39,7 +41,7 @@
 
 .calendar-cell {
   min-height: 80px;
-  border: 1px solid #eee;
+  border: 1px solid var(--lightgray);
   border-left: none;
   border-right: none;
   padding: 4px;
@@ -69,7 +71,7 @@
 
 .assignment-block {
   background-color: var(--block-color1);
-  color: #000;
+  color: white;
   font-size: 10px;
   padding: 2px 4px;
   border-radius: 4px;
@@ -114,4 +116,9 @@
   color:black;
   font-size: 16px;
   cursor: pointer;
+}
+
+.month-text {
+  font-size: 18px;
+  font-weight: 600;
 }

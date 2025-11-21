@@ -63,7 +63,7 @@ function Calendar() {
       
       <div className="calendar-top-bar">
         <button className="nav-btn" onClick={goToPreviousMonth}>◀</button>
-        <h2>{currentYear}년 {currentMonth + 1}월</h2>
+        <h2 className="month-text">{currentYear}년 {currentMonth + 1}월</h2>
         <button className="nav-btn" onClick={goToNextMonth}>▶</button>
       </div>
 
@@ -81,7 +81,7 @@ function Calendar() {
             <div
               key={idx}
               className="calendar-cell"
-              onClick={() => date && openDetail(date)}  // 🔥 날짜 클릭
+              onClick={() => date && openDetail(date)}
             >
               {date && (
                 <>
@@ -103,7 +103,6 @@ function Calendar() {
         </div>
       </div>
 
-      {/* 🔥 모달 렌더링 */}
         <DateDetail
         year={currentYear}
         month={currentMonth + 1}
