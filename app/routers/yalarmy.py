@@ -10,7 +10,7 @@ class EnsureUserRequest(BaseModel):
     password: str
 
 @router.post("/ensure-user")
-async def ensure_user(body: EnsureUserRequest):
+def ensure_user(body: EnsureUserRequest):
     email = body.email
     password = body.password
 

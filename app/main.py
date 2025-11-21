@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import yalarmy     # ← ensure-user 라우트
 from app.routers import course_items  # ← 미완료 항목 GET/POST 라우트
-
+from yalarmy import router as yalarmy_router
 
 app = FastAPI()
 
@@ -24,7 +24,7 @@ app.add_middleware(
 # =========================================
 app.include_router(yalarmy.router)
 app.include_router(course_items.router)
-
+app.include_router(yalarmy_router)
 
 # =========================================
 # 기본 루트
