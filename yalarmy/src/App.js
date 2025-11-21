@@ -1,15 +1,20 @@
 import Unfinished from './pages/Unfinished.js';
-import Calendar from './components/Calendar.js';
+import Calendar from './pages/Calendarr.js';
 import ChoosePage from './pages/ChoosePage.js';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <ChoosePage></ChoosePage>
-      <Unfinished></Unfinished>
-      <Calendar></Calendar>
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path = "/" element = {<ChoosePage/>}></Route>
+          <Route path = "/calendar" element = {<Calendar/>}></Route>
+          <Route path = "/tasks" element = {<Unfinished/>}></Route>
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

@@ -1,6 +1,7 @@
 import { FaArrowLeft } from "react-icons/fa";
 import { HiOutlineClipboard } from "react-icons/hi";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 function Unfinished ()
 {
@@ -12,7 +13,9 @@ function Unfinished ()
             {/* Appbar */}
             <div className = "w-[100%] h-[8em] py-[1em] px-[3em] bg-[#fcf7fe] flex flex-col gap-5 border-b-2 border-b-gray">
                 <div className = "flex flex-row gap-9 items-center">
-                    <FaArrowLeft />
+                    <Link to = "/">
+                        <FaArrowLeft />
+                    </Link>
                     <h2 className = "text-xl">미완료 과제</h2>
                 </div>
                 <div className="flex flex-row gap-6 font-medium text-sm">

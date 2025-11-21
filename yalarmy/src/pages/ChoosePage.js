@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 
 function ChoosePage()
 {
@@ -13,15 +15,15 @@ function ChoosePage()
                 </div>
 
                 <div className = "flex flex-row justify-evenly w-full">
-                    <div className = "flex flex-col gap-2">
+                    <Link to = "/calendar" className = "flex flex-col gap-2">
                         <h2 className = "text-xl font-semibold">[📅 캘린더]</h2>
                         일정을 한 번에 보고 관리하세요.
-                    </div>
+                    </Link>
 
-                    <div className = "flex flex-col gap-2">
+                    <Link to = "/tasks" className = "flex flex-col gap-2">
                         <h2 className = "text-xl font-semibold">[📝 미완료 항목]</h2>
                         마감 기한이 임박한 과제/영상만 모아봤어요.
-                    </div>
+                    </Link>
                 </div>
 
                 <div className = "flex flex-col gap-2">
