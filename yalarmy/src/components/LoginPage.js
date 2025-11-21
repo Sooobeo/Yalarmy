@@ -1,7 +1,9 @@
 import "./Auth.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function LoginPage() {
+    const navigate = useNavigate();
+
     return (
         <div className="auth-container">
             <div className="auth-card">
@@ -33,6 +35,16 @@ function LoginPage() {
                     계정이 없으신가요?{" "}
                     <Link to="/signup" className="auth-link">회원가입</Link>
                 </p>
+
+                {/* 🔥 카드 안에 로고 넣기 */}
+                <div
+                    className="yl-auth-footer-logo"
+                    onClick={() => navigate("/")}
+                >
+                    <img src="/logo.png" alt="Yalarmy Logo" />
+                    <p>Yalarmy 홈으로 가기</p>
+                </div>
+
             </div>
         </div>
     );
