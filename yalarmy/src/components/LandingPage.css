@@ -1,0 +1,384 @@
+html {
+  scroll-behavior: smooth;
+}
+
+/* =============== 기본 초기화 =============== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.yl-root {
+  width: 100%;
+  overflow-x: hidden;
+  background: #ffffff;
+  color: #1f2937;
+}
+
+/* =============== NAVBAR =============== */
+.yl-navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 999;
+  background: transparent;
+  padding: 18px 0;
+  transition: all 0.25s ease;
+}
+
+.yl-navbar-scrolled {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 2px 12px rgba(0, 0, 40, 0.08);
+}
+
+.yl-nav-inner {
+  width: 92%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.yl-logo {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  cursor: pointer;
+  /* 커서 모양 */
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.yl-logo:hover {
+  transform: scale(1.08);
+  opacity: 0.9;
+}
+
+.yl-nav-menu {
+  list-style: none;
+  display: flex;
+  gap: 28px;
+  align-items: center;
+}
+
+.yl-nav-menu a {
+  text-decoration: none;
+  color: #1f2937;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.yl-nav-menu a:hover {
+  color: #3b82f6;
+}
+
+.yl-login-btn {
+  background: #4f46e5;
+  color: white;
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.yl-login-btn:hover {
+  background: #4338ca;
+}
+
+/* =============== HERO =============== */
+.yl-hero {
+  padding: 180px 24px 160px;
+  text-align: center;
+
+  background: linear-gradient(135deg,
+      #005bac 0%,
+      #0067ce 50%,
+      #2b8cff 100%);
+  color: #ffffff;
+
+  animation: heroFade 1.2s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes heroFade {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.yl-hero-title {
+  font-size: 48px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 36px;
+  line-height: 1.25;
+  text-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* 글래스 스타일 버튼 */
+.yl-hero-btn {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  padding: 16px 44px;
+  border-radius: 40px;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+}
+
+.yl-hero-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* 캡션 */
+.yl-hero-caption {
+  display: block;
+  margin-top: 28px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 300;
+}
+
+
+/* =============== SECTION COMMON =============== */
+.yl-section {
+  width: 100%;
+  max-width: 1100px;
+  margin: 130px auto 0;
+  padding: 0 24px 0;
+  text-align: center;
+}
+
+.yl-section-title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 18px;
+  color: #1f2937;
+}
+
+.yl-section-desc {
+  color: #596273;
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+
+/* =============== FEATURES =============== */
+.yl-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.yl-feature-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 28px 22px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 40, 100, 0.07);
+}
+
+.yl-feature-icon {
+  font-size: 38px;
+  margin-bottom: 10px;
+}
+
+/* =============== PREVIEW SECTION =============== */
+.yl-preview-img-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.yl-preview-img {
+  width: 100%;
+  max-width: 900px;
+  border-radius: 18px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 28px rgba(0, 40, 100, 0.15);
+}
+
+/* =============== SOLUTION SECTION =============== */
+.yl-solution-grid {
+  max-width: 900px;
+  margin: 32px auto 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.yl-solution-card {
+  background: #ffffff;
+  padding: 26px 22px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+  box-shadow: 0 6px 22px rgba(0, 40, 100, 0.08);
+}
+
+.yl-solution-card h3 {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.yl-solution-card ul {
+  padding-left: 20px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #4b5563;
+}
+
+/* =============== ARCHITECTURE =============== */
+.yl-architecture {
+  padding: 120px 24px;
+  background: #f8fafc;
+  text-align: center;
+}
+
+.yl-arch-grid {
+  max-width: 1100px;
+  margin: 40px auto 0;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.yl-arch-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 40px 24px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.yl-arch-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+}
+
+.yl-arch-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.yl-arch-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.yl-arch-card p {
+  font-size: 15px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+/* 반응형 */
+@media (max-width: 900px) {
+  .yl-arch-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .yl-arch-card {
+    padding: 32px 20px;
+  }
+}
+
+/* =============== TEAM SECTION (4명 기준) =============== */
+.yl-team-grid {
+  max-width: 1100px;
+  margin: 40px auto 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  /* 4명 고정 */
+  gap: 28px;
+  justify-items: center;
+  align-items: stretch;
+}
+
+.yl-team-card {
+  background: #ffffff;
+  width: 100%;
+  max-width: 240px;
+  padding: 26px 20px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0, 40, 100, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Hover animation */
+.yl-team-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 26px rgba(0, 40, 100, 0.12);
+}
+
+.yl-team-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 8px;
+}
+
+.yl-team-card p {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+/* 반응형 (태블릿) */
+@media (max-width: 992px) {
+  .yl-team-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 반응형 (모바일) */
+@media (max-width: 600px) {
+  .yl-team-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+/* =============== FOOTER =============== */
+.yl-footer {
+  text-align: center;
+  margin-top: 100px;
+  padding: 32px 0;
+  color: #475569;
+  border-top: 1px solid #e5e7eb;
+}
+
+header .yl-logo {
+  transition: transform 0.25s ease, opacity 0.25s ease !important;
+  cursor: pointer !important;
+}
+
+header .yl-logo:hover {
+  transform: scale(1.08) !important;
+  opacity: 0.9 !important;
+}
+
+/* 고정 네비바 때문에 스크롤 위치가 가려지지 않게 보정 */
+.yl-section {
+  scroll-margin-top: 100px;
+  /* 네비바 높이만큼 보정 */
+}
