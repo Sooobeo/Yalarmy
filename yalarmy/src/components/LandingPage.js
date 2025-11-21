@@ -1,11 +1,15 @@
+// LandingPage.js
 import AOS from "aos";
 import "aos/dist/aos.css";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./LandingPage.css";
 
 function LandingPage() {
     const navigate = useNavigate();
+
+    // ✅ 로그인 상태
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const scrollToFeatures = () => {
         document.querySelector("#features")?.scrollIntoView({
@@ -13,13 +17,16 @@ function LandingPage() {
         });
     };
 
-    // 네비 스크롤 + AOS 초기화
+    // ✅ 로그인 여부 감지 (userKey 있으면 로그인 된 상태)
+    useEffect(() => {
+        const key = localStorage.getItem("userKey");
+        setIsLoggedIn(!!key);
+    }, []);
+
     // 네비 스크롤 + AOS 초기화
     useEffect(() => {
         const handleScroll = () => {
             const nav = document.querySelector(".yl-navbar");
-
-            // 🔥 네비바 없는 페이지에서는 실행 안 함 (오류 방지)
             if (!nav) return;
 
             if (window.scrollY > 10) nav.classList.add("yl-navbar-scrolled");
@@ -28,7 +35,6 @@ function LandingPage() {
 
         window.addEventListener("scroll", handleScroll);
 
-        // 🔥 AOS 애니메이션 초기화
         AOS.init({
             duration: 700,
             easing: "ease-out",
@@ -39,6 +45,12 @@ function LandingPage() {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    // ✅ 로그아웃 핸들러
+    const handleLogout = () => {
+        localStorage.removeItem("userKey");
+        setIsLoggedIn(false);
+        navigate("/"); // 로그아웃 후 홈 유지
+    };
 
     return (
         <div className="yl-root">
@@ -63,15 +75,39 @@ function LandingPage() {
                             <li><a href="#solution">문제·해결</a></li>
                             <li><a href="#architecture">아키텍처</a></li>
                             <li><a href="#team">팀</a></li>
+
+                            {/* ✅ 로그인 상태에 따라 버튼 바뀜 */}
                             <li>
-                                <button
-                                    className="yl-login-btn"
-                                    onClick={() => navigate("/login")}
-                                    data-aos="fade-down"
-                                >
-                                    로그인
-                                </button>
+                                {isLoggedIn ? (
+                                    <div style={{ display: "flex", gap: "8px" }}>
+                                        <button
+                                            className="yl-login-btn"
+                                            onClick={() => navigate("/dashboard")} 
+                                            data-aos="fade-down"
+                                        >
+                                            내 일정 보기
+                                        </button>
+
+                                        <button
+                                            className="yl-login-btn"
+                                            onClick={handleLogout}
+                                            style={{ background: "#dc2626" }}
+                                            data-aos="fade-down"
+                                        >
+                                            로그아웃
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <button
+                                        className="yl-login-btn"
+                                        onClick={() => navigate("/login")}
+                                        data-aos="fade-down"
+                                    >
+                                        로그인
+                                    </button>
+                                )}
                             </li>
+
                         </ul>
                     </nav>
                 </div>
@@ -113,14 +149,12 @@ function LandingPage() {
                 </p>
             </section>
 
-
             {/* FEATURES */}
             <section id="features" className="yl-section yl-features" data-aos="fade-up">
                 <h2 className="yl-section-title">제공 기능</h2>
                 <p className="yl-section-desc">Yalarmy의 핵심 기능을 직관적으로 확인해보세요.</p>
 
                 <div className="yl-feature-grid">
-
                     <div className="yl-feature-card" data-aos="fade-up" data-aos-delay="0">
                         <div className="yl-feature-icon">🗂️</div>
                         <h3>미완료 활동 자동 수집</h3>
@@ -144,7 +178,6 @@ function LandingPage() {
                         <h3>자료 숨기기 & 확장성</h3>
                         <p>마감 없는 자료 숨기기 지원, 통계/추천 기능으로 확장 가능.</p>
                     </div>
-
                 </div>
             </section>
 
@@ -170,7 +203,6 @@ function LandingPage() {
                 <p className="yl-section-desc">LearnUs 환경에서 자주 겪는 문제들을 해결합니다.</p>
 
                 <div className="yl-solution-grid">
-
                     <div className="yl-solution-card" data-aos="fade-right">
                         <h3>🤯 문제점</h3>
                         <ul>
@@ -190,7 +222,6 @@ function LandingPage() {
                             <li>과목·마감 중심 정렬로 효율적인 관리</li>
                         </ul>
                     </div>
-
                 </div>
             </section>
 
@@ -202,7 +233,6 @@ function LandingPage() {
                 </p>
 
                 <div className="yl-arch-grid">
-
                     <div className="yl-arch-card" data-aos="zoom-in" data-aos-delay="0">
                         <div className="yl-arch-icon">🧩</div>
                         <h3>브라우저 확장</h3>
@@ -220,7 +250,6 @@ function LandingPage() {
                         <h3>Frontend</h3>
                         <p>Flutter / Web에서 Supabase SDK로 조회</p>
                     </div>
-
                 </div>
             </section>
 
@@ -230,7 +259,6 @@ function LandingPage() {
                 <p className="yl-section-desc">Yalarmy를 만드는 사람들입니다.</p>
 
                 <div className="yl-team-grid">
-
                     <div className="yl-team-card" data-aos="fade-up" data-aos-delay="0">
                         <h3>PM / Backend</h3>
                         <p>Supabase · Data Model · Chrome Extension</p>
@@ -250,7 +278,6 @@ function LandingPage() {
                         <h3>Design</h3>
                         <p>UI 디자인 · 서비스 브랜딩</p>
                     </div>
-
                 </div>
             </section>
 

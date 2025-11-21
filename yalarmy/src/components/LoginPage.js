@@ -18,6 +18,7 @@ function LoginPage() {
     process.env.REACT_APP_BACKEND_API_BASE_URL || "http://127.0.0.1:8000";
 
   const handleSubmit = async (e) => {
+    console.log("🔥 handleSubmit CALLED");
     e.preventDefault();
     setErrorMsg("");
 
@@ -48,7 +49,7 @@ function LoginPage() {
         chrome.storage.sync.set({ userKey });
       }
 
-      navigate("/threads");
+      navigate("/choose");
     } catch (err) {
       console.error("[Login] error:", err);
       setErrorMsg(err.message);

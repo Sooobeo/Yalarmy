@@ -18,6 +18,9 @@ function App() {
           <Route path = "/choose" element = {<ChoosePage/>}></Route>
           <Route path = "/calendar" element = {<Calendar/>}></Route>
           <Route path = "/tasks" element = {<Unfinished/>}></Route>
+          <Route path="/" element={<LandingPage />} />   {/* 🔥 여기 중요 */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/choose" element={<ChoosePage />} />
         </Routes>
       </div>
     </Router>
