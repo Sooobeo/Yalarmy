@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Yalarmy 설정</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 12px;
+      width: 260px;
+    }
+    h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+    }
+    label {
+      font-size: 13px;
+      display: block;
+      margin: 8px 0 4px;
+    }
+    input {
+      width: 100%;
+      padding: 6px 8px;
+      margin-bottom: 6px;
+      box-sizing: border-box;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    button {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: none;
+      background: #4f46e5;
+      color: white;
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    button.secondary {
+      background: #111827;
+    }
+    .status {
+      font-size: 12px;
+      margin-top: 8px;
+      color: #4b5563;
+      min-height: 16px;
+      white-space: pre-line;
+    }
+    .divider {
+      margin: 12px 0;
+      border-top: 1px solid #e5e7eb;
+    }
+  </style>
+</head>
+
+<body>
+  <h3>Yalarmy 설정</h3>
+
+  <!-- ✅ 1) userKey(메일/학번) 저장 -->
+  <label for="userKey">메일/학번 (userKey)</label>
+  <input id="userKey" type="text" placeholder="your_email@yonsei.ac.kr 또는 학번" />
+  <label for="password">비밀번호</label>
+  <input id="password" type="password" placeholder="비밀번호" />
+  <button id="saveBtn">저장</button>
+
+  <div class="divider"></div>
+
+  <!-- ✅ 2) 동기화 트리거 -->
+  <button id="syncBtn" class="secondary">동기화</button>
+
+  <!-- ✅ 상태 표시(하나만!) -->
+  <div class="status" id="status"></div>
+
+  <!-- ✅ popup.js는 한 번만 로드 -->
+  <script src="popup.js"></script>
+</body>
+</html>
