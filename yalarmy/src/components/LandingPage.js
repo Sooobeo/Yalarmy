@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import "./LandingPage.css";
 
 function LandingPage() {
+    const navigate = useNavigate();
     const scrollToFeatures = () => {
         document.querySelector("#features")?.scrollIntoView({
             behavior: "smooth",
@@ -35,7 +37,15 @@ function LandingPage() {
                             <li><a href="#solution">문제·해결</a></li>
                             <li><a href="#architecture">아키텍처</a></li>
                             <li><a href="#team">팀</a></li>
-                            <li><button className="yl-login-btn">로그인</button></li>
+                            <li>
+                                <button
+                                    className="yl-login-btn"
+                                    onClick={() => navigate("/login")}
+                                >
+                                    로그인
+                                </button>
+                            </li>
+
                         </ul>
                     </nav>
                 </div>

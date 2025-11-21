@@ -1,17 +1,18 @@
-import Calendar from './components/Calendar.js';
-import './App.css';
-import LandingPage from './components/LandingPage.js';
-
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LandingPage from "./components/LandingPage";
+import LoginPage from "./components/LoginPage";
+import SignupPage from "./components/SignupPage";
 
 function App() {
   return (
-  <div className="App">
-    <Calendar />
-    <Calendar />
-    <LandingPage />
-  </div>
-);
-
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
