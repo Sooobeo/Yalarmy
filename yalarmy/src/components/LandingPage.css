@@ -44,7 +44,7 @@ html {
 }
 
 .yl-logo {
-  transition: 0.2s ease;
+  transition: transform 0.2s ease, opacity 0.2s ease;
   cursor: pointer;
   /* 커서 모양 */
   font-size: 24px;
@@ -53,8 +53,8 @@ html {
 }
 
 .yl-logo:hover {
-  transform: scale(1.05);
-  opacity: 0.85;
+  transform: scale(1.08);
+  opacity: 0.9;
 }
 
 .yl-nav-menu {
@@ -365,4 +365,20 @@ html {
   padding: 32px 0;
   color: #475569;
   border-top: 1px solid #e5e7eb;
+}
+
+header .yl-logo {
+  transition: transform 0.25s ease, opacity 0.25s ease !important;
+  cursor: pointer !important;
+}
+
+header .yl-logo:hover {
+  transform: scale(1.08) !important;
+  opacity: 0.9 !important;
+}
+
+/* 고정 네비바 때문에 스크롤 위치가 가려지지 않게 보정 */
+.yl-section {
+  scroll-margin-top: 100px;
+  /* 네비바 높이만큼 보정 */
 }
