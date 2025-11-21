@@ -1,7 +1,9 @@
 // LoginPage.js
+/* global chrome */
 import "./Auth.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -11,10 +13,9 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
+  // ❗ CRA, Next.js 등에서 안전하게 동작하는 방식
   const API_BASE =
-    import.meta?.env?.VITE_BACKEND_API_BASE_URL ||
-    process.env.REACT_APP_BACKEND_API_BASE_URL ||
-    "http://127.0.0.1:8000"; // fallback
+    process.env.REACT_APP_BACKEND_API_BASE_URL || "http://127.0.0.1:8000";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,16 +42,13 @@ function LoginPage() {
       const { userKey } = data;
       if (!userKey) throw new Error("userKey가 응답에 없습니다.");
 
-      // 1) 일반 웹이면 localStorage 저장
       localStorage.setItem("userKey", userKey);
 
-      // 2) 크롬 확장/크롬 환경이면 sync 저장도 같이(있으면)
       if (typeof chrome !== "undefined" && chrome?.storage?.sync) {
         chrome.storage.sync.set({ userKey });
       }
 
-      // 로그인 성공 후 이동
-      navigate("/threads"); // 필요하면 "/" 등으로 바꿔
+      navigate("/threads");
     } catch (err) {
       console.error("[Login] error:", err);
       setErrorMsg(err.message);
