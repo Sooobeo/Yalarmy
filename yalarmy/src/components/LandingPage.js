@@ -28,7 +28,14 @@ function LandingPage() {
             {/* NAVBAR */}
             <header className="yl-navbar">
                 <div className="yl-nav-inner">
-                    <div className="yl-logo">Yalarmy</div>
+                    <div
+                        className="yl-logo"
+                        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                        style={{ cursor: "pointer" }}
+                    >
+                        Yalarmy
+                    </div>
+
                     <nav>
                         <ul className="yl-nav-menu">
                             <li><a href="#intro">소개</a></li>
